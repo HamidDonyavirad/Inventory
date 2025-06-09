@@ -1,4 +1,120 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 # Create your models here.
-class User 
+class Product (models.Model):
+    product_name = models.CharField(max_length=200)
+    product_code = models.IntegerField(unique=True)
+    weight = models.FloatField(help_text="weight in kilograms")
+    color = models.CharField(max_length=100)
+    dimensions = models.CharField(max_length=200)
+    country_of_manufacture = models.CharField(max_length=200)
+    brand = models.CharField(max_length=100)
+    expiration_date = models.DateField()
+    
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    category = models.ForeignKey('Category', on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"{self.product_name}-{self.product_code}"
+    
+ 
+ 
+class Category(models.Model):
+    category_name = models.CharField(max_length=100)
+    
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+       
+    def __str__(self):
+        return f"{self.category_name}"
+
+
+
+class Inventory (models.Model):
+    INBOUND = 'inbound'
+    OUTBOUND = 'outbound'
+    INTERNAL_TRANSFER = 'internal transfer'
+    
+    TRANSACTION_TYPE_CHOICES = [
+        (INBOUND,'inbound'),
+        (OUTBOUND,'outbound'),
+        (INTERNAL_TRANSFER,'internal transfer'),
+    ]
+    
+    transaction_type = models.CharField(max_length=20,choices=TRANSACTION_TYPE_CHOICES,default=INBOUND)
+    quantity= models.IntegerField()
+    date = models.DateTimeField()
+    
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.transaction_type}"
+
+    
+
+class Order (models.Model):
+    order_number = models.IntegerField(unique=True)
+    
+    PURCHASE = 'Purchase'
+    SALE = 'Sale'
+
+    TRANSACTION_TYPE_CHOICES = [
+        (PURCHASE, 'Purchase'),
+        (SALE, 'Sale'),
+    ]
+
+    CUSTOMER = 'customer'
+    SUPPLIER = 'supplier'
+    
+    CUSTOMER_OR_SUPPLIER_TYPE_CHOICES = [
+        (CUSTOMER,'customer')
+        (SUPPLIER,'supplier')
+    ]
+    
+    transaction_type = models.CharField(
+        max_length=10,
+        choices=TRANSACTION_TYPE_CHOICES,
+        default=PURCHASE,
+    )
+    
+    costomer_or_supplier_choices = models.CharField(
+        max_length=10,choices=CUSTOMER_OR_SUPPLIER_TYPE_CHOICES,default=CUSTOMER,    
+    )
+    
+    date = models.DateTimeField()
+    
+    STATUS_IN_PROGRESS = 'In Progress'
+    STATUS_COMPLETED = 'Completed'
+    STATUS_CANCELLED = 'Cancelled'
+
+    STATUS_CHOICES = [
+        (STATUS_IN_PROGRESS, 'In Progress'),
+        (STATUS_COMPLETED, 'Completed'),
+        (STATUS_CANCELLED, 'Cancelled'),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_IN_PROGRESS,
+    )
+    
+    def __str__(self):
+        return f"{self.transaction_type}-{self.costomer_or_supplier_choices}"
+    
+    
+
+class OrderItem (models.Model):
+    price = models.FloatField(max_length=10,decimal_places=2)
+    quantity = models.IntegerField()
+    
+    order = models.ForeignKey(Order,on_delete=models.CASCADE)
+    product = models.ForeignKey(Product,on_delete=models.CASCADE)
+    
+    
+    def __str__(self):
+        return f"Order #{self.order.order_number} - Product: {self.product.product_name}"
+    
+    
+                
