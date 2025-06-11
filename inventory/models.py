@@ -68,8 +68,8 @@ class Order (models.Model):
     SUPPLIER = 'supplier'
     
     CUSTOMER_OR_SUPPLIER_TYPE_CHOICES = [
-        (CUSTOMER,'customer')
-        (SUPPLIER,'supplier')
+        (CUSTOMER,'customer'),
+        (SUPPLIER,'supplier'),
     ]
     
     transaction_type = models.CharField(
@@ -106,7 +106,7 @@ class Order (models.Model):
     
 
 class OrderItem (models.Model):
-    price = models.FloatField(max_length=10,decimal_places=2)
+    price = models.DecimalField(max_digits=10,decimal_places=2)
     quantity = models.IntegerField()
     
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
