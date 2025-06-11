@@ -78,10 +78,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME':'inventory_db',
-        'USER':'hamid',
-        'PASSWORD': '123789456hd',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'USER':'postgres',
+        'PASSWORD':'123456789hd',
+        'HOST':'localhost',
+        'PORT':'5432',
     }
 }
 
