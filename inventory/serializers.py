@@ -15,13 +15,13 @@ class CategorySerializer(serializers.ModelSerializer):
         
 class InventorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
+        model = Inventory
         fields = ['id','transaction_type','quantity','date']    
         
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
+        model = Order
         fields = ['id','order_number','transaction_type','costomer_or_supplier_choices','date','status',]                            
         
         
