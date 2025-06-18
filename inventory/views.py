@@ -3,13 +3,14 @@ from .serializers import RegisterSerializer,ProductSerializer,CategorySerializer
 from rest_framework.response import Response
 from .models import Product,Category,Inventory,Order,OrderItem
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated , AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 # Create your views here.
 
 class RegisterView(APIView):
+    permission_classes = [AllowAny]
     def post(self,request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
