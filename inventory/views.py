@@ -18,6 +18,7 @@ class RegisterView(APIView):
             return Response({'msg':'User created'},status=201)
         return Response(serializer.data, status=400)
 
+
 class ProductView(APIView):
     authentication_classes =[JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -55,9 +56,37 @@ class ProductView(APIView):
         product.delete()
         return Response(status=204)
 
-class CategoryView(APIView):
-    pass
 
+class CategoryView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self,request):
+        category = Category.objects.all()
+        serializer = CategorySerializer(category, many=True)
+        return Response(serializer.data, status=201)
+    
+    def post(self,request):
+        serializer= CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.data, status=400)
+    
+    def put(self,request,pk):
+        category = Category.objects.get(pk=pk)
+        serializer = CategorySerializer(category,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=201)
+        return Response(serializer.data, status=400)
+    
+    def delete(self,request,pk):
+        category = Category.objects.get(pk=pk)
+        category.delete()
+        return Response(status=204)
+            
+            
 class InventoryView(APIView):
     pass
 
