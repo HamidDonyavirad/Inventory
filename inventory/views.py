@@ -88,7 +88,20 @@ class CategoryView(APIView):
             
             
 class InventoryView(APIView):
-    pass
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        inventory = Inventory.objects.all()
+        serializer = InventorySerializer(inventory,many=True)
+        return Response(serializer.data)
+    
+    def post(self,request):
+        serializer= InventorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.data, status=400)
 
 class OrderView(APIView):
     pass
