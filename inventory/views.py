@@ -102,9 +102,44 @@ class InventoryView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+    
+    def delete(self,request,pk):
+        category = Inventory.objects.get(pk=pk)
+        category.delete()
+        return Response(status=204)
 
 class OrderView(APIView):
-    pass
+    def get(self, request):
+        order = Order.objects.all()
+        serializer = OrderSerializer(order,many=True)
+        return Response(serializer.data)
+    
+    def post(self,request):
+        serializer= OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    
+    def delete(self,request,pk):
+        category = Order.objects.get(pk=pk)
+        category.delete()
+        return Response(status=204)
 
 class OrderItemView(APIView):
-    pass
+    def get(self, request):
+        orderitem = OrderItem.objects.all()
+        serializer = OrderItemSerializer(orderitem,many=True)
+        return Response(serializer.data)
+    
+    def post(self,request):
+        serializer= OrderItemSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    
+    def delete(self,request,pk):
+        category = OrderItem.objects.get(pk=pk)
+        category.delete()
+        return Response(status=204)
