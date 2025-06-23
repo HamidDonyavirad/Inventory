@@ -16,7 +16,7 @@ class RegisterView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({'msg':'User created'},status=201)
-        return Response(serializer.data, status=400)
+        return Response(serializer.errors, status=400)
 
 
 class ProductView(APIView):
@@ -33,7 +33,7 @@ class ProductView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=201) 
-        return Response(serializer.data, status=400) 
+        return Response(serializer.errors, status=400) 
     
     def put(self,request,pk):
         product = Product.objects.get(pk=pk)
@@ -41,7 +41,7 @@ class ProductView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=201)
-        return Response(serializer.data, status=400) 
+        return Response(serializer.errors, status=400) 
     
     def patch(self,request,pk):
         product = Product.objects.get(pk=pk)
@@ -49,7 +49,7 @@ class ProductView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=201)
-        return Response(serializer.data, status=400)
+        return Response(serializer.errors, status=400)
     
     def delete(self,request,pk):
         product = Product.objects.get(pk=pk)
@@ -71,7 +71,7 @@ class CategoryView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.data, status=400)
+        return Response(serializer.errors, status=400)
     
     def put(self,request,pk):
         category = Category.objects.get(pk=pk)
@@ -79,7 +79,7 @@ class CategoryView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=201)
-        return Response(serializer.data, status=400)
+        return Response(serializer.errors, status=400)
     
     def delete(self,request,pk):
         category = Category.objects.get(pk=pk)
@@ -101,7 +101,7 @@ class InventoryView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.data, status=400)
+        return Response(serializer.errors, status=400)
 
 class OrderView(APIView):
     pass
