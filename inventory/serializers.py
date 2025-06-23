@@ -21,9 +21,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         
         
 class ProductSerializer(serializers.ModelSerializer):
+    color = serializers.charField(required=False,allow_blank=True)
+    dimensions = serializers.charField(required=False,allow_blank=True)
     class Meta:
         model = Product
         fields = ['id','product_name','product_code','weight','color','dimensions','country_of_manufacture','brand','expiration_date']
+        
 
 
 class CategorySerializer(serializers.ModelSerializer):
