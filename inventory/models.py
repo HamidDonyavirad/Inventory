@@ -7,10 +7,10 @@ class Product (models.Model):
     product_name = models.CharField(max_length=200)
     product_code = models.IntegerField(unique=True)
     weight = models.FloatField(help_text="weight in kilograms")
-    color = models.CharField(max_length=100)
-    dimensions = models.CharField(max_length=200)
+    color = models.CharField(max_length=100,null=True,blank=True)
+    dimensions = models.CharField(max_length=200,null=True,blank=True)
     country_of_manufacture = models.CharField(max_length=200)
-    brand = models.CharField(max_length=100)
+    brand = models.CharField(max_length=100,null=True,blank=True)
     expiration_date = models.DateField()
     
     user = models.ForeignKey(User,on_delete=models.CASCADE)
