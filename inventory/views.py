@@ -109,6 +109,9 @@ class InventoryView(APIView):
         return Response(status=204)
 
 class OrderView(APIView):
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request):
         order = Order.objects.all()
         serializer = OrderSerializer(order,many=True)
@@ -127,6 +130,8 @@ class OrderView(APIView):
         return Response(status=204)
 
 class OrderItemView(APIView):
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         orderitem = OrderItem.objects.all()
         serializer = OrderItemSerializer(orderitem,many=True)
@@ -143,3 +148,26 @@ class OrderItemView(APIView):
         category = OrderItem.objects.get(pk=pk)
         category.delete()
         return Response(status=204)
+    
+class ProductStockView(APIView):
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self,request,pk):
+        try:
+            product = Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return Response({'error':'Product not found'}, status=404)
+        
+        inbound = Inventory.objects.filter(product=product, transaction_type='inbound').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        outbound = Inventory.objects.filter(product=product, transaction_type='outbound').aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+        current_stock = inbound - outbound
+
+        return Response({
+            'product': product.product_name,
+            'product_id': product.id,
+            'stock': current_stock
+        })
+                
+        
