@@ -23,22 +23,23 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     color = serializers.CharField(required=False,allow_blank=True)
     dimensions = serializers.CharField(required=False,allow_blank=True)
+    brand = serializers.CharField(required=False,allow_blank=True)
     class Meta:
         model = Product
-        fields = ['id','product_name','product_code','weight','color','dimensions','country_of_manufacture','brand','expiration_date']
+        fields = ['id','product_name','product_code','weight','color','dimensions','country_of_manufacture','brand','expiration_date','user','category']
         
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id','category_name']
+        fields = ['id','category_name','user']
 
         
 class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
-        fields = ['id','transaction_type','quantity','date']    
+        fields = ['id','transaction_type','quantity','date','user','product']    
         
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -50,5 +51,5 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields =['id','price','quantity']            
+        fields =['id','price','quantity','order','product']            
         
