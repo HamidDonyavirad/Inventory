@@ -5,6 +5,7 @@ from .models import Product,Category,Inventory,Order,OrderItem
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated , AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.db.models import Sum
 
 
 # Create your views here.
