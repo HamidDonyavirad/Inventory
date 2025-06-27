@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import RegisterView,ProductView, CategoryView, InventoryView, OrderView, OrderItemView, ProductStockView
-from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView,LogoutView
+from .views import RegisterView,ProductView, CategoryView, InventoryView, OrderView, OrderItemView, ProductStockView,LogoutView
+from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
 
 
 
