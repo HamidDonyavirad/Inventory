@@ -21,6 +21,22 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=400)
 
 
+class LogoutView(APIView):
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self,request):
+        refresh_token = request.data.get("refresh")
+        if refresh_token is None:
+            return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST) 
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()  
+            return Response({"detail": "Logout successful."}, status=status.HTTP_205_RESET_CONTENT)
+        except TokenError as e:
+            return Response({"detail": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)    
+
+
 class ProductView(APIView):
     authentication_classes =[JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -173,17 +189,4 @@ class ProductStockView(APIView):
         })
                 
  
-class LogoutView(APIView):
-    authentication_classes =[JWTAuthentication]
-    permission_classes = [IsAuthenticated]
-    
-    def post(self,request):
-        refresh_token = request.data.get("refresh")
-        if refresh_token is None:
-            return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST) 
-        try:
-            token = RefreshToken(refresh_token)
-            token.blacklist()  
-            return Response({"detail": "Logout successful."}, status=status.HTTP_205_RESET_CONTENT)
-        except TokenError as e:
-            return Response({"detail": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)          
+          

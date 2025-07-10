@@ -24,6 +24,7 @@ class ProductSerializer(serializers.ModelSerializer):
     color = serializers.CharField(required=False,allow_blank=True)
     dimensions = serializers.CharField(required=False,allow_blank=True)
     brand = serializers.CharField(required=False,allow_blank=True)
+    user = serializers.SlugRelatedField(read_only=True, slug_field='username')
     class Meta:
         model = Product
         fields = ['id','product_name','product_code','weight','color','dimensions','country_of_manufacture','brand','expiration_date','user','category']
