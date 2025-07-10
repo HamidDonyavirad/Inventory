@@ -1,7 +1,6 @@
 # 📦 Inventory Management API
 
-A lightweight, flexible API for managing inventory, stock levels, and order tracking. Ideal for logistics systems, e-commerce platforms, and warehouses.
-
+The goal of this project is to design and implement a powerful and flexible API for the comprehensive management of warehouse operations and order processing. This system can serve as a central core within logistics management software, online stores, distribution companies, and other businesses that deal with inventory and order registration. The designed API will be capable of connecting to other systems (such as websites, sales applications, or accounting systems).
 
 ## 🚀 Features
 
