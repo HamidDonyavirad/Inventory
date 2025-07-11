@@ -42,8 +42,16 @@ class Inventory (models.Model):
         (INTERNAL_TRANSFER,'internal transfer'),
     ]
     
+    WEIGHT = 'weight(kg)'
+    COUNT = 'count'   
+    
+    UNIT_TYPE_CHOICES = [
+        (WEIGHT,'weight(KG)'),
+        (COUNT,'count'),
+    ] 
     transaction_type = models.CharField(max_length=20,choices=TRANSACTION_TYPE_CHOICES,default=INBOUND)
-    quantity= models.IntegerField()
+    unit_type =models.CharField(max_length=20, choices=UNIT_TYPE_CHOICES, default=WEIGHT)
+    quantity = models.FloatField()
     date = models.DateTimeField()
     
     user = models.ForeignKey(User,on_delete=models.CASCADE)
