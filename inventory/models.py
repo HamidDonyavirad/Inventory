@@ -72,25 +72,25 @@ class Order (models.Model):
         (PURCHASE, 'Purchase'),
         (SALE, 'Sale'),
     ]
-
-    CUSTOMER = 'customer'
-    SUPPLIER = 'supplier'
-    
-    CUSTOMER_OR_SUPPLIER_TYPE_CHOICES = [
-        (CUSTOMER,'customer'),
-        (SUPPLIER,'supplier'),
-    ]
-    
     transaction_type = models.CharField(
         max_length=10,
         choices=TRANSACTION_TYPE_CHOICES,
         default=PURCHASE,
     )
+
+    CUSTOMER = 'customer'
+    SUPPLIER = 'supplier'
     
-    costomer_or_supplier_choices = models.CharField(
-        max_length=10,choices=CUSTOMER_OR_SUPPLIER_TYPE_CHOICES,default=CUSTOMER,    
+    COSTOMER_OR_SUPPLIER_CHOICE = [
+        (CUSTOMER,'customer'),
+        (SUPPLIER,'supplier'),
+    ]
+    
+    
+    role = models.CharField(
+        max_length=10,choices=COSTOMER_OR_SUPPLIER_CHOICE,default=CUSTOMER,    
     )
-    
+    role_name = models.CharField(max_length=100)
     date = models.DateTimeField()
     
     STATUS_IN_PROGRESS = 'In Progress'
