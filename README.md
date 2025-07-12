@@ -12,6 +12,13 @@ The goal of this project is to design and implement a powerful and flexible API 
 - Order  management
 
 
+## 📄 Documentations
+
+- [Models](Models.md)
+- [Serializers](Serializers.md)
+- [Views](Views.md)
+
+
 ## 🧰 Tech Stack
 
 - Python, Django, DRF
