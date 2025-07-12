@@ -14,9 +14,9 @@ The goal of this project is to design and implement a powerful and flexible API 
 
 ## 📄 Documentations
 
-- [Models](Models.md)
-- [Serializers](Serializers.md)
-- [Views](Views.md)
+- [Models](Docs/Models.md)
+- [Serializers](Docs/Serializers.md)
+- [Views](Docs/Views.md)
 
 
 ## 🧰 Tech Stack
