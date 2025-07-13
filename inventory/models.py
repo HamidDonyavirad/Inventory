@@ -110,7 +110,7 @@ class Order (models.Model):
     )
     
     def __str__(self):
-        return f"{self.transaction_type}-{self.costomer_or_supplier_choices}"
+        return f"{self.transaction_type}-{self.role}"
     
     
 
