@@ -13,4 +13,6 @@ urlpatterns = [
     path('category/',CategoryView.as_view(),name='category'),
     path('inventory/',InventoryView.as_view(),name='inventory'),
     path('inventory/stock/<int:pk>/', ProductStockView.as_view(), name='product-stock'),
+    path('order/',OrderView.as_view(),name='order'),
+    path('orderitem/',OrderItemView.as_view(),name='orderitem'),
 ]
