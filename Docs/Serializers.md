@@ -43,6 +43,8 @@ This document describes the serializers used in the project, their purpose, and 
 | **Model** | Inventory |
 | **Purpose** | Serializes inventory transactions (inbound, outbound, transfer). |
 | **Fields** | id, transaction_type, quantity, date, user, product |
+| **Notes** | - Contains a `validate` method to ensure there is enough stock when transaction_type is OUTBOUND. <br> - Calculates current stock by summing previous inbound and outbound transactions for the product. |
+
 
 ---
 
