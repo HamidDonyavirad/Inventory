@@ -40,7 +40,28 @@ class CategorySerializer(serializers.ModelSerializer):
 class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
-        fields = ['id','transaction_type','quantity','date','user','product']    
+        fields = ['id','transaction_type','quantity','date','user','product'] 
+    
+    def validate(self, data):
+        transaction_type = data.get('transaction_type')
+        quantity = data.get('quantity')
+        date = data.get('date') 
+        product_id = data.get('product')
+        if transaction_type == Inventory.OUTBOUND: 
+            inventories = Inventory.objects.filter(product=product_id).order_by('date')
+            current_stock = 0
+            for inv in inventories:
+                if inv.transaction_type == Inventory.INBOUND:
+                    current_stock += inv.quantity
+                elif inv.transaction_type == Inventory.OUTBOUND:
+                    current_stock -= inv.quantity 
+                    
+            if quantity > current_stock:
+                raise serializers.ValidationError(
+                    {'quantity':'There is not enough balance for this transfer'}
+                ) 
+                
+        return data                       
         
 
 class OrderSerializer(serializers.ModelSerializer):
