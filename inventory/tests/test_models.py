@@ -1,5 +1,5 @@
 from django.test import TestCase
-from inventory.models import Product, Category
+from inventory.models import Product, Category,Inventory
 from django.contrib.auth import get_user_model
 import datetime
 
@@ -48,3 +48,41 @@ class CategoryModelTest(TestCase):
         )
         self.assertEqual(category.category_name,'Fruits')    
         self.assertEqual(category.user, self.user)
+        
+
+class InventoryModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='hamid', password='123456789')
+        self.category = Category.objects.create(category_name='Fruits', user=self.user)
+        self.product = Product.objects.create(
+            product_name='banana',
+            product_code=123,
+            weight=5,
+            color='yellow',
+            dimensions='23*12*15',
+            country_of_manufacture='usa',
+            brand='usa',
+            expiration_date=datetime.date(2025, 7, 12),
+            category=self.category,
+            user=self.user
+        )
+        
+        
+    def test_create_inventory(self):
+        inventory = Inventory.objects.create(
+            transaction_type = 'INBOUND',
+            unit_type = 'WEIGHT', 
+            quantity = '4.5',
+            date = datetime.date(2025, 7, 12),
+            user=self.user,
+            product=self.product,   
+        )                 
+        
+        self.assertEqual(inventory.transaction_type,'INBOUND')
+        self.assertEqual(inventory.unit_type,'WEIGHT')
+        self.assertEqual(inventory.quantity,'4.5')
+        self.assertEqual(inventory.date,datetime.date(2025, 7, 12))
+        self.assertEqual(inventory.user, self.user)
+        self.assertEqual(inventory.product, self.product)
+        
+        
