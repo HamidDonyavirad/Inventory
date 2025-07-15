@@ -34,3 +34,17 @@ class ProductModelTest(TestCase):
         self.assertEqual(product.expiration_date, datetime.date(2025, 7, 12))
         self.assertEqual(product.category, self.category)
         self.assertEqual(product.user, self.user)
+
+
+
+class CategoryModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='hamid', password='123456789') 
+        
+    def test_create_category(self):
+        category = Category.objects.create(
+            category_name = 'Fruits', 
+            user=self.user       
+        )
+        self.assertEqual(category.category_name,'Fruits')    
+        self.assertEqual(category.user, self.user)
