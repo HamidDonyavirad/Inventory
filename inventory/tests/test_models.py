@@ -1,0 +1,36 @@
+from django.test import TestCase
+from inventory.models import Product, Category
+from django.contrib.auth import get_user_model
+import datetime
+
+User = get_user_model()
+
+class ProductModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='hamid', password='123456789')
+        self.category = Category.objects.create(category_name='Fruits', user=self.user)
+        
+    def test_create_product(self):
+        product = Product.objects.create(
+            product_name='banana',
+            product_code=123,
+            weight=5,
+            color='yellow',
+            dimensions='23*12*15',
+            country_of_manufacture='usa',
+            brand='usa',
+            expiration_date=datetime.date(2025, 7, 12),
+            category=self.category,
+            user=self.user
+        )
+        
+        self.assertEqual(product.product_name, 'banana')
+        self.assertEqual(product.product_code, 123)
+        self.assertEqual(product.weight, 5)
+        self.assertEqual(product.color, 'yellow')
+        self.assertEqual(product.dimensions, '23*12*15')
+        self.assertEqual(product.country_of_manufacture, 'usa')
+        self.assertEqual(product.brand, 'usa')
+        self.assertEqual(product.expiration_date, datetime.date(2025, 7, 12))
+        self.assertEqual(product.category, self.category)
+        self.assertEqual(product.user, self.user)
