@@ -37,7 +37,7 @@ class LogoutView(APIView):
             return Response({"detail": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)    
 
 
-class ProductView(APIView):
+class ProductsView(APIView):
     authentication_classes =[JWTAuthentication]
     permission_classes = [IsAuthenticated]
     
@@ -52,28 +52,52 @@ class ProductView(APIView):
             serializer.save()
             return Response(serializer.data,status=201) 
         return Response(serializer.errors, status=400) 
+        
+
+class ProductsDetailView(APIView):
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    #To avoid this repetition, I define a helper method called get_object
+    def get_object(self,pk):
+        try:
+            return Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return None
+    
+    def get(self,request,pk):
+        product = self.get_object(pk)
+        if not product:
+            return Response({'detail':'Not Found'},status=404)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
     
     def put(self,request,pk):
-        product = Product.objects.get(pk=pk)
+        product = self.get_object(pk)
+        if not product:
+            return Response({'detail':'Not Found'},status=404)
         serializer = ProductSerializer(product,data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=201)
+            return Response(serializer.data,status=200)
         return Response(serializer.errors, status=400) 
     
     def patch(self,request,pk):
-        product = Product.objects.get(pk=pk)
+        product = self.get_object(pk)
+        if not product:
+            return Response({'detail':'Not Found'},status=404)
         serializer = ProductSerializer(product,data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=201)
+            return Response(serializer.data,status=200)
         return Response(serializer.errors, status=400)
     
     def delete(self,request,pk):
-        product = Product.objects.get(pk=pk)
+        product = self.get_object(pk)
+        if not product:
+            return Response({'detail':'Not Found'},status=404)
         product.delete()
-        return Response(status=204)
-
+        return Response(status=204)    
 
 class CategoryView(APIView):
     authentication_classes = [JWTAuthentication]
