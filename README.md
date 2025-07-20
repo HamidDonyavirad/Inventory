@@ -25,6 +25,7 @@ The goal of this project is to design and implement a powerful and flexible API 
 For this inventory management project, I used the built-in `unittest` framework in Python to write and run unit tests. This helps ensure the reliability and correctness of the application's core functionality.
 
 -[Models](inventory/tests/test_models.py)
+-[views](inventory/tests/test_views.py)
 
 
 

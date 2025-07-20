@@ -106,27 +106,50 @@ class CategoryView(APIView):
     def get(self,request):
         category = Category.objects.all()
         serializer = CategorySerializer(category, many=True)
-        return Response(serializer.data, status=201)
+        return Response(serializer.data)
     
     def post(self,request):
         serializer= CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
     
+    
+class CategoryDetailView(APIView):
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated] 
+    
+    #To avoid this repetition, I define a helper method called get_object
+    def get_object(self,pk):
+        try:
+            return Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return None
+        
+    def get(self,request,pk):
+        category = self.get_object(pk)
+        if not category:
+            return Response({'detail':'Not Found'},status=404)
+        serializer = ProductSerializer(category)
+        return Response(serializer.data)    
+    
     def put(self,request,pk):
-        category = Category.objects.get(pk=pk)
+        category = self.get_object(pk)
+        if not category:
+            return Response({'detail':'Not Found'},status=404)
         serializer = CategorySerializer(category,data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=201)
+            return Response(serializer.data,status=200)
         return Response(serializer.errors, status=400)
     
     def delete(self,request,pk):
-        category = Category.objects.get(pk=pk)
+        category = self.get_object(pk)
+        if not category:
+            return Response({'detail':'Not Found'},status=404)
         category.delete()
-        return Response(status=204)
+        return Response(status=204)   
             
             
 class InventoryView(APIView):

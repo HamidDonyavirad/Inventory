@@ -48,8 +48,6 @@ class ProductViewTest(APITestCase):
         data.update(kwargs)
         return Product.objects.create(**data)
         
-       
-        
         
     def test_create_product_api(self):
         url = reverse('products')
@@ -64,7 +62,6 @@ class ProductViewTest(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.data) >=1)  
         
-    
     def test_update_product(self):
         product = self.create_product()
         url = reverse('product-detail', kwargs={'pk': product.id})      
@@ -73,8 +70,7 @@ class ProductViewTest(APITestCase):
         response = self.client.put(url, updated_data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['product_name'], 'Updated Name')  
-        
-        
+          
     def test_partial_update_product(self):
         product = self.create_product()
         url = reverse('product-detail', kwargs={'pk':product.id}) 
@@ -83,7 +79,6 @@ class ProductViewTest(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['color'], 'Blue')  
         
-        
     def test_delete_product(self):
         product = self.create_product()
         url = reverse('product-detail',kwargs={'pk':product.id})
@@ -91,5 +86,59 @@ class ProductViewTest(APITestCase):
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Product.objects.filter(id=product.id).exists())
                 
-         
+
+
+class CategoryViewTest(APITestCase): 
+    
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass')
         
+        refresh = RefreshToken.for_user(self.user)
+        self.access_token = str(refresh.access_token)
+        
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token)
+        
+        self.category_data={
+            'category_name':'test',
+            'user': self.user.id
+        } 
+        
+    def create_category(self,**kwargs):
+        data={
+            'category_name':'test1',
+            'user': self.user      
+            }
+        data.update(kwargs)
+        return Category.objects.create(**data)
+        
+        
+        
+    def test_create_category_api(self):
+        url = reverse('category') 
+        response = self.client.post(url,self.category_data,format = 'json')  
+        self.assertEqual(response.status_code,201)
+        self.assertEqual(response.data['category_name'],'test') 
+        
+    def test_get_category_api(self):
+        category = self.create_category()  
+        url = reverse ('category') 
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data) >=1)  
+                
+    def test_update_category(self):
+        category = self.create_category()
+        url = reverse('category-detail', kwargs={'pk': category.id})      
+        updated_data = self.category_data.copy()
+        updated_data['category_name'] = 'Updated Name'
+        response = self.client.put(url, updated_data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['category_name'], 'Updated Name')  
+        
+    def test_delete_category(self):
+        categoty = self.create_category()
+        url = reverse('category-detail',kwargs={'pk':categoty.id})
+        response =self.client.delete(url)
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Category.objects.filter(id=categoty.id).exists())      
