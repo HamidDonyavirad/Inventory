@@ -1,5 +1,5 @@
 from django.test import TestCase
-from inventory.models import Product, Category,Inventory,Order,OrderItem
+from inventory.models import Product, Category,Inventory,Order,OrderLine
 from django.contrib.auth import get_user_model
 import datetime
 
@@ -106,7 +106,7 @@ class OrderModelTest(TestCase):
         
         
               
-class OrderItemModelTest(TestCase):
+class OrderLineModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='hamid', password='123456789')
         self.category = Category.objects.create(category_name='Fruits', user=self.user)
@@ -131,15 +131,15 @@ class OrderItemModelTest(TestCase):
             user=self.user
         )
         
-    def test_create_orderitem(self):
-        orderitem = OrderItem.objects.create(
+    def test_create_orderline(self):
+        orderline = OrderLine.objects.create(
             price = 12.20,
             quantity = 50,
             order = self.order,
             product = self.product
         )    
                     
-        self.assertEqual(orderitem.price,12.20)
-        self.assertEqual(orderitem.quantity,50)
-        self.assertEqual(orderitem.order,self.order)
-        self.assertEqual(orderitem.product,self.product)
+        self.assertEqual(orderline.price,12.20)
+        self.assertEqual(orderline.quantity,50)
+        self.assertEqual(orderline.order,self.order)
+        self.assertEqual(orderline.product,self.product)

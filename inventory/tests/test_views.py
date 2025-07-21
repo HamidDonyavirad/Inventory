@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase, APIClient
 from django.urls import reverse
-from inventory.models import Product, Category,Inventory,Order,OrderItem
+from inventory.models import Product, Category,Inventory,Order,OrderLine
 import datetime
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -146,7 +146,7 @@ class CategoryViewTest(APITestCase):
         
 
 class InventoryViewTest(APITestCase): 
-    def setUp(self,**kwargs):
+    def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='testpass') 
         self.category = Category.objects.create(category_name='Test Product',user=self.user)
         
@@ -209,4 +209,54 @@ class InventoryViewTest(APITestCase):
         url = reverse('inventory-detail',kwargs={'pk':inventory.id})
         response =self.client.delete(url)
         self.assertEqual(response.status_code, 204)
-        self.assertFalse(Inventory.objects.filter(id=inventory.id).exists())    
+        self.assertFalse(Inventory.objects.filter(id=inventory.id).exists())  
+        
+
+class OrderViewTest(APITestCase): 
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        refresh = RefreshToken.for_user(self.user)
+        self.access_token = str(refresh.access_token)
+        
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token)  
+        
+        self.order_data={
+            'order_number':1234,
+            'transaction_type':'Purchase',
+            'role':'customer',
+            'date':datetime.date(2025, 7, 12),
+            'status':'In Progress'
+            
+        } 
+        
+    def create_order(self, **kwargs):
+        data = {
+            'order_number':1234,
+            'transaction_type':'Purchase',
+            'role':'customer',
+            'date':datetime.date(2025, 7, 12),
+            'status':'In Progress'
+        }
+        data.update(kwargs)
+        return Order.objects.create(**data)
+    
+    def test_create_order_api(self):
+        url = reverse('order') 
+        response = self.client.post(url,self.order_data,format = 'json')  
+        self.assertEqual(response.status_code,201)
+        self.assertEqual(response.data['order_number'],1234)    
+    
+    def test_get_order_api(self):
+        order = self.create_order()  
+        url = reverse ('order') 
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data) >=1)               
+        
+    def test_delete_order(self):
+        order = self.create_order()
+        url = reverse('order-detail',kwargs={'pk':order.id})
+        response =self.client.delete(url)
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Order.objects.filter(id=order.id).exists())    
