@@ -248,13 +248,34 @@ class OrderLineView(APIView):
         serializer= OrderLineSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data,status=201)
         return Response(serializer.errors, status=400)
     
+class OrderLineDetailView(APIView):
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated] 
+        
+    #To avoid this repetition, I define a helper method called get_object
+    def get_object(self,pk):
+        try:
+            return OrderLine.objects.get(pk=pk)
+        except OrderLine.DoesNotExist:
+            return None
+        
+    def get(self,request,pk):
+        orderline = self.get_object(pk)
+        if not orderline:
+            return Response({'detail':'Not Found'},status=404)
+        serializer = OrderLineSerializer(orderline)
+        return Response(serializer.data)    
+      
     def delete(self,request,pk):
-        category = OrderLine.objects.get(pk=pk)
-        category.delete()
-        return Response(status=204)
+        orderline = self.get_object(pk)
+        if not orderline:
+            return Response({'detail':'Not Found'},status=404)
+        orderline.delete()
+        return Response(status=204)    
+    
     
 class ProductStockView(APIView):
     authentication_classes =[JWTAuthentication]
