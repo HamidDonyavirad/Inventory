@@ -142,3 +142,71 @@ class CategoryViewTest(APITestCase):
         response =self.client.delete(url)
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Category.objects.filter(id=categoty.id).exists())      
+        
+        
+
+class InventoryViewTest(APITestCase): 
+    def setUp(self,**kwargs):
+        self.user = User.objects.create_user(username='testuser', password='testpass') 
+        self.category = Category.objects.create(category_name='Test Product',user=self.user)
+        
+        
+        refresh = RefreshToken.for_user(self.user)
+        self.access_token = str(refresh.access_token)
+        
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token) 
+        
+        self.product = Product.objects.create(
+            product_name= 'Test Product',
+            product_code= 12345,
+            weight= 1.5,
+            color= 'Red',
+            dimensions= '10x20x30',
+            brand= 'usa',
+            country_of_manufacture= 'usa',
+            expiration_date= datetime.date(2025, 7, 12),
+            category= self.category,
+            user= self.user
+        )
+        
+        self.inventory_data={
+            'transaction_type':'inbound',
+            'unit_type':'weight(kg)',
+            'quantity':'200',
+            'date':datetime.date(2025, 7, 12),
+            'user': self.user.id,
+            'product':self.product.id
+        } 
+        
+    def create_inventory(self, **kwargs):
+        data = {
+            'transaction_type':'inbound',
+            'unit_type':'weight(kg)',
+            'quantity':'200',
+            'date':datetime.date(2025, 7, 12),
+            'user': self.user,
+            'product':self.product
+        }
+        data.update(kwargs)
+        return Inventory.objects.create(**data)
+    
+    def test_create_inventory_api(self):
+        url = reverse('inventory') 
+        response = self.client.post(url,self.inventory_data,format = 'json')  
+        self.assertEqual(response.status_code,201)
+        self.assertEqual(response.data['transaction_type'],'inbound')             
+        
+    def test_get_inventory_api(self):
+        Inventory = self.create_inventory()  
+        url = reverse ('inventory') 
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data) >=1)    
+        
+    def test_delete_inventory(self):
+        inventory = self.create_inventory()
+        url = reverse('inventory-detail',kwargs={'pk':inventory.id})
+        response =self.client.delete(url)
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Inventory.objects.filter(id=inventory.id).exists())    
