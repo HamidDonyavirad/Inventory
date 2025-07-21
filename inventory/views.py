@@ -165,12 +165,32 @@ class InventoryView(APIView):
         serializer= InventorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data,status=201)
         return Response(serializer.errors, status=400)
     
+class InventoryDetailView(APIView):  
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated] 
+    
+    #To avoid this repetition, I define a helper method called get_object
+    def get_object(self,pk):
+        try:
+            return Inventory.objects.get(pk=pk)
+        except Inventory.DoesNotExist:
+            return None
+        
+    def get(self,request,pk):
+        inventory = self.get_object(pk)
+        if not inventory:
+            return Response({'detail':'Not Found'},status=404)
+        serializer = InventorySerializer(inventory)
+        return Response(serializer.data)    
+      
     def delete(self,request,pk):
-        category = Inventory.objects.get(pk=pk)
-        category.delete()
+        inventory = self.get_object(pk)
+        if not inventory:
+            return Response({'detail':'Not Found'},status=404)
+        inventory.delete()
         return Response(status=204)
 
 class OrderView(APIView):
