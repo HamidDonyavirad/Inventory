@@ -78,7 +78,7 @@ This document explains the Django REST Framework (DRF) views in the project: wha
 
 ---
 
-### 🔹 OrderItemView
+### 🔹 OrderLineView
 | Method | Purpose |
 |------|--------|
 | `GET` | List all order items. |

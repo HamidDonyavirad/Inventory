@@ -259,4 +259,75 @@ class OrderViewTest(APITestCase):
         url = reverse('order-detail',kwargs={'pk':order.id})
         response =self.client.delete(url)
         self.assertEqual(response.status_code, 204)
-        self.assertFalse(Order.objects.filter(id=order.id).exists())    
+        self.assertFalse(Order.objects.filter(id=order.id).exists()) 
+        
+        
+class OrderLineViewTest(APITestCase):    
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.category = Category.objects.create(category_name='Test Product',user=self.user)
+        refresh = RefreshToken.for_user(self.user)
+        self.access_token = str(refresh.access_token)
+        
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token)
+        
+        self.product = Product.objects.create(
+            product_name= 'Test Product',
+            product_code= 12345,
+            weight= 1.5,
+            color= 'Red',
+            dimensions= '10x20x30',
+            brand= 'usa',
+            country_of_manufacture= 'usa',
+            expiration_date= datetime.date(2025, 7, 12),
+            category= self.category,
+            user= self.user
+            )
+        
+        self.order = Order.objects.create(
+            order_number= 1234,
+            transaction_type= 'Purchase',
+            role= 'customer',
+            role_name= 'Ali',
+            date= datetime.date(2025, 7, 12),
+            status= 'In Progress',    
+            )
+           
+        self.orderline_data={
+            'price':200,
+            'quantity':200,
+            'product':self.product.id,
+            'order':self.order.id
+            
+             }  
+        
+    def create_orderline(self, **kwargs):
+        data = {
+            'price':200,
+            'quantity':200,
+            'product':self.product,
+            'order':self.order
+        }
+        data.update(kwargs)
+        return OrderLine.objects.create(**data) 
+    
+    def test_create_orderline_api(self):
+        url = reverse('orderline') 
+        response = self.client.post(url,self.orderline_data,format = 'json')  
+        self.assertEqual(response.status_code,201)
+        self.assertEqual(response.data['price'],'200.00')     
+        
+    def test_get_orderline_api(self):
+        orderline = self.create_orderline()  
+        url = reverse ('orderline') 
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data) >=1)   
+        
+    def test_delete_orderline(self):
+        orderline = self.create_orderline()
+        url = reverse('orderline-detail',kwargs={'pk':orderline.id})
+        response =self.client.delete(url)
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(OrderLine.objects.filter(id=orderline.id).exists())     
