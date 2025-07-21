@@ -114,7 +114,7 @@ class Order (models.Model):
     
     
 
-class OrderItem (models.Model):
+class OrderLine (models.Model):
     price = models.DecimalField(max_digits=10,decimal_places=2)
     quantity = models.IntegerField()
     

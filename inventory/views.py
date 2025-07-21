@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
-from .serializers import RegisterSerializer,ProductSerializer,CategorySerializer,InventorySerializer,OrderSerializer,OrderItemSerializer
+from .serializers import RegisterSerializer,ProductSerializer,CategorySerializer,InventorySerializer,OrderSerializer,OrderLineSerializer
 from rest_framework.response import Response
-from .models import Product,Category,Inventory,Order,OrderItem
+from .models import Product,Category,Inventory,Order,OrderLine
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated , AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -131,7 +131,7 @@ class CategoryDetailView(APIView):
         category = self.get_object(pk)
         if not category:
             return Response({'detail':'Not Found'},status=404)
-        serializer = ProductSerializer(category)
+        serializer = CategorySerializer(category)
         return Response(serializer.data)    
     
     def put(self,request,pk):
@@ -206,31 +206,53 @@ class OrderView(APIView):
         serializer= OrderSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data,status=201)
         return Response(serializer.errors, status=400)
     
+    
+class OrderDetailView(APIView):
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [IsAuthenticated] 
+        
+    #To avoid this repetition, I define a helper method called get_object
+    def get_object(self,pk):
+        try:
+            return Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return None
+        
+    def get(self,request,pk):
+        order = self.get_object(pk)
+        if not order:
+            return Response({'detail':'Not Found'},status=404)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)    
+      
     def delete(self,request,pk):
-        category = Order.objects.get(pk=pk)
-        category.delete()
+        order = self.get_object(pk)
+        if not order:
+            return Response({'detail':'Not Found'},status=404)
+        order.delete()
         return Response(status=204)
+    
 
-class OrderItemView(APIView):
+class OrderLineView(APIView):
     authentication_classes =[JWTAuthentication]
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        orderitem = OrderItem.objects.all()
-        serializer = OrderItemSerializer(orderitem,many=True)
+        orderline = OrderLine.objects.all()
+        serializer = OrderLineSerializer(orderline,many=True)
         return Response(serializer.data)
     
     def post(self,request):
-        serializer= OrderItemSerializer(data=request.data)
+        serializer= OrderLineSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
     
     def delete(self,request,pk):
-        category = OrderItem.objects.get(pk=pk)
+        category = OrderLine.objects.get(pk=pk)
         category.delete()
         return Response(status=204)
     

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product,Category, Inventory, Order,OrderItem
+from .models import Product,Category, Inventory, Order,OrderLine
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -67,11 +67,11 @@ class InventorySerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id','order_number','transaction_type','costomer_or_supplier_choices','date','status',]                            
+        fields = ['id','order_number','transaction_type','role','date','status',]                            
         
         
-class OrderItemSerializer(serializers.ModelSerializer):
+class OrderLineSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OrderItem
+        model = OrderLine
         fields =['id','price','quantity','order','product']            
         
