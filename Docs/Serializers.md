@@ -54,16 +54,16 @@ This document describes the serializers used in the project, their purpose, and 
 | **Type** | ModelSerializer |
 | **Model** | Order |
 | **Purpose** | Serializes purchase and sale orders. |
-| **Fields** | id, order_number, transaction_type, costomer_or_supplier_choices, date, status |
-| **Notes** | *Consider reviewing the field name `costomer_or_supplier_choices` for clarity or renaming.* |
+| **Fields** | id, order_number, transaction_type, role,role_name, date, status |
+| **Notes** | *Consider reviewing the field name `role` for clarity or renaming.* |
 
 ---
 
-## 📦 OrderItemSerializer
+## 📦 OrderLineSerializer
 | Item | Details |
 |-----|--------|
 | **Type** | ModelSerializer |
-| **Model** | OrderItem |
+| **Model** | OrderLine |
 | **Purpose** | Serializes individual items included in an order. |
 | **Fields** | id, price, quantity, order, product |
 

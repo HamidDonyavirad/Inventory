@@ -3,7 +3,7 @@ from inventory.models import Product, Category,Inventory,Order,OrderLine
 from inventory.serializers import ProductSerializer,CategorySerializer,InventorySerializer,OrderSerializer,OrderLineSerializer
 from django.contrib.auth import get_user_model
 import datetime
-from django.utils import timezone
+
 
 
 #This test code:
@@ -145,4 +145,44 @@ class OrderSerializersTest(TestCase):
         self.assertEqual(data['role'],'customer') 
         self.assertEqual(data['role_name'],'Ali')
         self.assertEqual(data['date'], '2025-07-22T18:38:45.703898Z')   
-        self.assertEqual(data['status'], 'Completed')    
+        self.assertEqual(data['status'], 'Completed')   
+        
+        
+class OrderLineSerializersTest(TestCase):   
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass') 
+        self.category = Category.objects.create(category_name='Test Product',user=self.user)
+        self.product = Product.objects.create(
+            product_name= 'Test Product',
+            product_code= 12345,
+            weight= 1.5,
+            color= 'Red',
+            dimensions= '10*20*30',
+            brand= 'usa',
+            country_of_manufacture= 'usa',
+            expiration_date= datetime.date(2025, 7, 12),
+            user= self.user,
+            category= self.category,
+            ) 
+        self.order = Order.objects.create(
+            order_number =1234,
+            transaction_type ='Purchase',
+            role = 'customer',
+            role_name='Ali',
+            date='2025-07-22T18:38:45.703898Z',
+            status ='Completed',
+                
+        )
+        
+        self.orderline = OrderLine.objects.create(
+            price =200.00,
+            quantity=400,
+            order =self.order,
+            product =self.product    
+        )        
+    def test_orderline_seializer_contains_expected_fields(self):
+        serializer = OrderLineSerializer(instance = self.orderline) 
+        data = serializer.data   
+        self.assertEqual(set(data.keys()),{
+            'id','price','quantity','order','product'    
+        })    
