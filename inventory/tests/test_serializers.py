@@ -186,3 +186,12 @@ class OrderLineSerializersTest(TestCase):
         self.assertEqual(set(data.keys()),{
             'id','price','quantity','order','product'    
         })    
+            
+    def test_orderline_seializer_data_content(self): 
+        serializer = OrderLineSerializer(instance = self.orderline)  
+        data = serializer.data
+        self.assertEqual(data['price'],'200.00') 
+        self.assertEqual(data['quantity'],400) 
+        self.assertEqual(data['order'],self.order.id) 
+        self.assertEqual(data['product'],self.product.id)
+           
