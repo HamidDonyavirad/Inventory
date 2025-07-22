@@ -40,7 +40,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
-        fields = ['id','transaction_type','quantity','date','user','product'] 
+        fields = ['id','transaction_type','unit_type','quantity','date','user','product'] 
     
     def validate(self, data):
         transaction_type = data.get('transaction_type')
