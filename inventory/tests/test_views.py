@@ -4,6 +4,7 @@ from inventory.models import Product, Category,Inventory,Order,OrderLine
 import datetime
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.db.models import Sum
 
 
 User = get_user_model()
@@ -330,4 +331,55 @@ class OrderLineViewTest(APITestCase):
         url = reverse('orderline-detail',kwargs={'pk':orderline.id})
         response =self.client.delete(url)
         self.assertEqual(response.status_code, 204)
-        self.assertFalse(OrderLine.objects.filter(id=orderline.id).exists())     
+        self.assertFalse(OrderLine.objects.filter(id=orderline.id).exists()) 
+        
+        
+class ProductStockViewTest (APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.category = Category.objects.create(category_name='Test Product',user=self.user)
+        refresh = RefreshToken.for_user(self.user)
+        self.access_token = str(refresh.access_token)
+        
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token)
+        
+        self.product = Product.objects.create(
+            product_name= 'Test Product',
+            product_code= 12345,
+            weight= 1.5,
+            color= 'Red',
+            dimensions= '10x20x30',
+            brand= 'usa',
+            country_of_manufacture= 'usa',
+            expiration_date= datetime.date(2025, 7, 12),
+            category= self.category,
+            user= self.user
+            )
+        inbound = Inventory.objects.create(
+            transaction_type='inbound',
+            unit_type='weight(kg)',
+            quantity=500,
+            date=datetime.date(2025, 7, 12),
+            user= self.user,
+            product=self.product   
+            )
+        
+        outbound = Inventory.objects.create(
+            transaction_type='outbound',
+            unit_type='weight(kg)',
+            quantity=200,
+            date=datetime.date(2025, 7, 12),
+            user= self.user,
+            product=self.product
+            )
+        
+        self.current_stock = inbound.quantity - outbound.quantity
+               
+    def test_get_product_stock_success(self):  
+        url = reverse('product-stock', kwargs={'pk': self.product.pk}) 
+        response = self.client.get(url)
+        self.assertEqual(response.data['product'], self.product.product_name)
+        self.assertEqual(response.data['product_id'], self.product.id)
+        self.assertEqual(response.data['stock'], 300)    
+        self.assertEqual(response.status_code, 200)     
