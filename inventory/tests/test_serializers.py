@@ -114,4 +114,35 @@ class InventorySerializersTest(TestCase):
         self.assertEqual(data['quantity'],200.0) 
         self.assertEqual(data['date'],'2025-07-22T18:38:45.703898Z')
         self.assertEqual(data['user'], self.user.id)   
-        self.assertEqual(data['product'], self.product.id)            
+        self.assertEqual(data['product'], self.product.id)       
+        
+        
+class OrderSerializersTest(TestCase):     
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass') 
+        self.order = Order.objects.create(
+            order_number =1234,
+            transaction_type ='Purchase',
+            role = 'customer',
+            role_name='Ali',
+            date='2025-07-22T18:38:45.703898Z',
+            status ='Completed',
+                
+        )           
+    
+    def test_order_seializer_contains_expected_fields(self):
+        serializer = OrderSerializer(instance = self.order) 
+        data = serializer.data   
+        self.assertEqual(set(data.keys()),{
+            'id','order_number','transaction_type','role','role_name','date','status'    
+        })    
+        
+    def test_order_seializer_data_content(self): 
+        serializer = OrderSerializer(instance = self.order)  
+        data = serializer.data
+        self.assertEqual(data['order_number'],1234) 
+        self.assertEqual(data['transaction_type'],'Purchase') 
+        self.assertEqual(data['role'],'customer') 
+        self.assertEqual(data['role_name'],'Ali')
+        self.assertEqual(data['date'], '2025-07-22T18:38:45.703898Z')   
+        self.assertEqual(data['status'], 'Completed')    

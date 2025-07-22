@@ -26,7 +26,7 @@ For this inventory management project, I used the built-in `unittest` framework 
 
 - [Models](inventory/tests/test_models.py)
 - [Views](inventory/tests/test_views.py)
-- [Serializers](inventory/tests/test_Serializers.py)
+- [Serializers](inventory/tests/test_serializers.py)
 
 
 ## 🧰 Tech Stack
