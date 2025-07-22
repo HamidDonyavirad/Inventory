@@ -226,6 +226,7 @@ class OrderViewTest(APITestCase):
             'order_number':1234,
             'transaction_type':'Purchase',
             'role':'customer',
+            'role_name':'Ali',
             'date':datetime.date(2025, 7, 12),
             'status':'In Progress'
             
@@ -236,6 +237,7 @@ class OrderViewTest(APITestCase):
             'order_number':1234,
             'transaction_type':'Purchase',
             'role':'customer',
+            'role_name':'Ali',
             'date':datetime.date(2025, 7, 12),
             'status':'In Progress'
         }
