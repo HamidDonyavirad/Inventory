@@ -24,8 +24,9 @@ class ProductSerializerTest(TestCase):
             brand= 'usa',
             country_of_manufacture= 'usa',
             expiration_date= datetime.date(2025, 7, 12),
+            user= self.user,
             category= self.category,
-            user= self.user
+            
         )
         
     def test_product_serializer_contains_expected_fields(self):
@@ -50,3 +51,23 @@ class ProductSerializerTest(TestCase):
         self.assertEqual(data['expiration_date'], '2025-07-12')
         self.assertEqual(data['user'], 'testuser')
         self.assertEqual(data['category'], self.category.id)        
+
+class CategorySerializersTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.category = Category.objects.create(category_name='Test Product',user=self.user)
+    
+    
+    def test_category_seializer_contains_expected_fields(self):
+        serializer = CategorySerializer(instance = self.category) 
+        data = serializer.data   
+        self.assertEqual(set(data.keys()),{
+            'id','category_name','user'
+        }) 
+    
+    def test_category_seializer_data_content(self): 
+        serializer = CategorySerializer(instance = self.category)  
+        data = serializer.data
+        self.assertEqual(data['category_name'],'Test Product') 
+        self.assertEqual(data['user'], self.user.id) 
+          
