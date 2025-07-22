@@ -67,7 +67,7 @@ class InventorySerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id','order_number','transaction_type','role','date','status',]                            
+        fields = ['id','order_number','transaction_type','role','role_name','date','status',]                            
         
         
 class OrderLineSerializer(serializers.ModelSerializer):
