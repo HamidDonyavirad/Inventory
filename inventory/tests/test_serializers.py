@@ -3,6 +3,7 @@ from inventory.models import Product, Category,Inventory,Order,OrderLine
 from inventory.serializers import ProductSerializer,CategorySerializer,InventorySerializer,OrderSerializer,OrderLineSerializer
 from django.contrib.auth import get_user_model
 import datetime
+from django.utils import timezone
 
 
 #This test code:
@@ -70,4 +71,47 @@ class CategorySerializersTest(TestCase):
         data = serializer.data
         self.assertEqual(data['category_name'],'Test Product') 
         self.assertEqual(data['user'], self.user.id) 
-          
+
+
+class InventorySerializersTest(TestCase):   
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass') 
+        self.category = Category.objects.create(category_name='Test Product',user=self.user)
+        self.product = Product.objects.create(
+            product_name= 'Test Product',
+            product_code= 12345,
+            weight= 1.5,
+            color= 'Red',
+            dimensions= '10*20*30',
+            brand= 'usa',
+            country_of_manufacture= 'usa',
+            expiration_date= datetime.date(2025, 7, 12),
+            user= self.user,
+            category= self.category,
+            )
+        self.inventory = Inventory.objects.create(
+            transaction_type='inbound',
+            unit_type='weight(kg)',
+            quantity=200.0,
+            date='2025-07-22T18:38:45.703898Z', 
+            user= self.user,
+            product=self.product   
+        )
+        
+    def test_inventory_seializer_contains_expected_fields(self):
+        serializer = InventorySerializer(instance = self.inventory) 
+        data = serializer.data   
+        self.assertEqual(set(data.keys()),{
+            'id','transaction_type','unit_type','quantity','date','user','product'    
+        })     
+    
+    
+    def test_inventory_seializer_data_content(self): 
+        serializer = InventorySerializer(instance = self.inventory)  
+        data = serializer.data
+        self.assertEqual(data['transaction_type'],'inbound') 
+        self.assertEqual(data['unit_type'],'weight(kg)') 
+        self.assertEqual(data['quantity'],200.0) 
+        self.assertEqual(data['date'],'2025-07-22T18:38:45.703898Z')
+        self.assertEqual(data['user'], self.user.id)   
+        self.assertEqual(data['product'], self.product.id)            
