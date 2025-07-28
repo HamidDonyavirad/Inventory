@@ -1,9 +1,10 @@
 FROM python:3.13-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
- && rm -rf /var/lib/apt/lists/*
+   build-essential \
+   libpq-dev \
+  && rm -rf /var/lib/apt/lists/*
+
 
 RUN mkdir /app
 WORKDIR /app
@@ -39,6 +40,4 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "my_docker_django_app.wsgi:application"]
-
-
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "inventory_system.wsgi:application"]
